@@ -1,0 +1,160 @@
+/* style.css */
+
+/* 全局設置 */
+body {
+    font-family: 'Microsoft JhengHei', sans-serif;
+    background-color: #fff9db;  /* 根據頭貼背景顏色設置 */
+    margin: 0;
+    padding: 0;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    text-align: center;
+    padding: 2em 0;
+    background-color: #ffe29a;  /* 柔和的黃色 */
+    width: 100%;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+    color: #ff6b6b;  /* 粉色標題 */
+}
+
+.main-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 90%;
+    margin: 2em 0;
+}
+
+section {
+    flex: 1;
+    min-width: 200px;
+    margin: 1em;
+    padding: 1em;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: 1000px;
+}
+
+h2 {
+    color: #ff6b6b;  /* 粉色標題 */
+    font-size: 1.8em;
+    border-bottom: 2px solid #ff6b6b;
+    padding-bottom: 0.3em;
+    margin-bottom: 1em;
+}
+
+p {
+    line-height: 1.6;
+    color: #4a4a4a;  /* 深灰色文字 */
+}
+
+ul {
+    padding-left: 20px;
+}
+
+section img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1em 0;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    
+}
+
+#logo_img{
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+
+}
+
+footer {
+    text-align: center;
+    padding: 1em 0;
+    background-color: #ffe29a;  /* 柔和的黃色 */
+    width: 100%;
+}
+
+footer div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* 響應式設計 */
+@media only screen and (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    section {
+        margin: 0.5em;
+    }
+
+    h2 {
+        font-size: 1.5em;
+    }
+
+    p {
+        font-size: 1em;
+    }
+}
+
+
+/* 輪播樣式 */
+.carousel-container {
+    position: relative;
+    max-width: 80%;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-slide {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-slide img {
+    min-width: 100%;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.carousel-buttons {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+}
+
+.carousel-button {
+    background: rgba(255, 255, 255, 0.7);
+    border: none;
+    padding: 1em;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.carousel-button:hover {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+
+

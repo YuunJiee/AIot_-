@@ -1,32 +1,35 @@
-import asyncio
 import json
 import sqlite3
+import requests
 from bs4 import BeautifulSoup
-from pyppeteer import launch
+from linebot.models import TemplateSendMessage, CarouselTemplate, CarouselColumn, URITemplateAction, TextSendMessage
 
 class CookKeyword:
     def __init__(self, keyword):
         self.keyword = keyword
-        self.conn = sqlite3.connect('icook.db')
+        self.recipes = []  # 初始化 recipes 属性
+        db_path = '/tmp/icook.db'
+        self.conn = sqlite3.connect(db_path)
         self.c = self.conn.cursor()
         self.c.execute('''CREATE TABLE IF NOT EXISTS recipes
-                         (url TEXT, description TEXT, additionalType TEXT, name TEXT, image TEXT)''')
+                         (url TEXT, description TEXT, additionalType TEXT, name TEXT, image TEXT, keyword TEXT)''')
 
-    async def scrape(self):
+    def scrape(self):
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+
         try:
-            browser = await launch(headless=True)
-            page = await browser.newPage()
-            await page.goto(f"https://icook.tw/search/{self.keyword}/")
-            await page.waitForSelector('script[type="application/ld+json"]')
-            html_content = await page.content()
-            await browser.close()
-        except Exception as e:
-            print(f"Error during scraping: {e}")
+            response = requests.get(f"https://icook.tw/search/{self.keyword}/", headers=headers)
+            response.raise_for_status()
+            html_content = response.text
+        except requests.RequestException as e:
+            print(f"请求错误：{e}")
             return []
 
-        recipes = self.extract_recipes(html_content)[:5]  # 只取前五個相關食譜
-        self.save_to_db(recipes)
-        return recipes
+        self.recipes = self.extract_recipes(html_content)[:5]  # 将爬取到的食谱存储在 self.recipes 中
+        self.save_to_db(self.recipes)  # 将食谱存储到数据库
+        return self.recipes
 
     def extract_recipes(self, html_content):
         recipes = []
@@ -44,13 +47,13 @@ class CookKeyword:
                                     recipe = {
                                         'url': element.get('url', ''),
                                         'description': element.get('description', ''),
-                                        'additionalType': element.get('additionalType', ''),
+                                        'additionalType': json.dumps(element.get('additionalType', '')),  # 转换为 JSON 字符串
                                         'name': element.get('name', ''),
                                         'image': element.get('image', '')
                                     }
                                     recipes.append(recipe)
             except json.JSONDecodeError as e:
-                print(f"Error parsing JSON: {e}")
+                print(f"解析 JSON 时出错：{e}")
                 continue
 
         return recipes
@@ -58,36 +61,36 @@ class CookKeyword:
     def save_to_db(self, recipes):
         for recipe in recipes:
             try:
-                self.c.execute("INSERT INTO recipes VALUES (?, ?, ?, ?, ?)",
-                               (recipe['url'], recipe['description'], recipe['additionalType'], recipe['name'], recipe['image']))
+                self.c.execute("INSERT INTO recipes VALUES (?, ?, ?, ?, ?, ?)",
+                               (recipe['url'], recipe['description'], recipe['additionalType'], recipe['name'], recipe['image'], self.keyword))
             except sqlite3.Error as e:
-                print(f"Error saving recipe to database: {e}")
+                print(f"保存食谱到数据库时出错：{e}")
         self.conn.commit()
 
     def close_db(self):
         self.conn.close()
 
-async def main():
-    keyword = input("請輸入關鍵字：")
-    cook = CookKeyword(keyword)
-    result = await cook.scrape()
+    def get_carousel_message(self):
+        if not self.recipes:
+            return TextSendMessage(text=f"未找到关于 '{self.keyword}' 的食谱。")
 
-    if not result:
-        print("未找到相關食譜。")
-        cook.close_db()
-        return
+        columns = []
+        for recipe in self.recipes:
+            column = CarouselColumn(
+                thumbnail_image_url=recipe.get('image', ''),
+                title=recipe.get('name', '无标题'),
+                text=recipe.get('description', '暂无描述')[:60] or '暂无描述',  # 使用默认文本当描述为空
+                actions=[
+                    URITemplateAction(
+                        label='前往食谱',
+                        uri=recipe.get('url', '')
+                    )
+                ]
+            )
+            columns.append(column)
 
-    # 顯示查詢結果的資訊
-    print(f"與 '{keyword}' 相關的前五個食譜：")
-    for idx, recipe in enumerate(result, start=1):
-        print(f"\nRecipe {idx}:")
-        print(f"Title: {recipe.get('name', '')}")
-        print(f"Description: {recipe.get('description', '')}")
-        print(f"URL: {recipe.get('url', '')}")
-        print(f"Image URL: {recipe.get('image', '')}")
-        print()
-
-    cook.close_db()
-
-if __name__ == "__main__":
-    asyncio.run(main())
+        carousel_template = CarouselTemplate(columns=columns)
+        return TemplateSendMessage(
+            alt_text=f"与 '{self.keyword}' 相关的食谱",
+            template=carousel_template
+        )

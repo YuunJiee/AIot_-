@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乖孫小冰(冰箱管理系統)</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="icon" href="static/images/logo.png" type="image/x-icon" />
+</head>
+<body>
+    <header>
+        <h1>乖孫小冰 - 冰箱管理系統</h1>
+    </header>
+    <div class="main-content">
+        <section>
+            <h2>LINE</h2>
+            <img src="static/images/logo.png" alt="LOGO" id="logo_img" >
+            <p>LINE ID: @479gtnne</p>
+            <img src="static/images/qr.png" alt="QR Code">
+        </section>
+        <!-- <section>
+            <h2>功能介紹</h2>
+            <img src="static/images/初始圖文.png" alt="功能介紹">
+        </section> -->
+        <section>
+            <h2>使用範例</h2>
+            <div class="carousel-container">
+                <div class="carousel-slide">
+                    <img src="static/images/example/1.jpg" alt="範例圖片 1" class="example_img">
+                    <img src="static/images/example/2.jpg" alt="範例圖片 2" class="example_img">
+                    <img src="static/images/example/3.jpg" alt="範例圖片 3" class="example_img">
+                    <img src="static/images/example/4.jpg" alt="範例圖片 4" class="example_img">
+                </div>
+                <div class="carousel-buttons">
+                    <button class="carousel-button prev" onclick="moveSlide(-1)">&#10094;</button>
+                    <button class="carousel-button next" onclick="moveSlide(1)">&#10095;</button>
+                </div>
+            </div>
+        </section>
+    </div>
+    <footer>
+        <div>
+            <p>© 2024 乖孫小冰 </p>
+            <a href="https://github.com/YuunJiee/AIot_Refrigerator_management_system.git">
+                <img src="static/images/github.png" alt="github_image" width="30">
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        let slideIndex = 0;
+        const slides = document.querySelectorAll('.carousel-slide img');
+
+        function moveSlide(n) {
+            slideIndex += n;
+            if (slideIndex >= slides.length) {
+                slideIndex = 0;
+            } else if (slideIndex < 0) {
+                slideIndex = slides.length - 1;
+            }
+            updateSlide();
+        }
+
+        function updateSlide() {
+            const carouselSlide = document.querySelector('.carousel-slide');
+            carouselSlide.style.transform = `translateX(${-slideIndex * 100}%)`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSlide();  // Initialize carousel position
+        });
+    </script>
+</body>
+</html>
+
+
