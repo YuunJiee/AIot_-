@@ -2,7 +2,7 @@
 
 ## 項目介紹
 
-乖孫小冰是一個冰箱管理系統，可以幫助你管理冰箱中的食材。藉由 LINE BOT，可以新增、刪除食材，查詢即期品、查詢食譜，以及查詢冰箱庫存和冰箱現況(冰箱的溫濕度)。
+乖孫小冰是一個冰箱管理系統，可以幫助你管理冰箱中的食材。藉由 LINE BOT，可以新增、刪除食材，查詢即期品、查詢食譜，以及查詢冰箱庫存和冰箱現況(冰箱溫濕度)。
 
 ## 網站
 ![image](https://github.com/YuunJiee/AIot_Final_Project/blob/main/static/images/web.gif)
